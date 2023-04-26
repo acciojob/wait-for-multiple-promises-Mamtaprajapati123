@@ -1,34 +1,35 @@
-// Get the table element and the tbody element
-const table = document.querySelector('table');
-const tbody = table.querySelector('tbody');
+function randomDelay() {
+  return Math.floor(Math.random() * 3000) + 1000; // returns a random number between 1000 and 3000
+}
 
-// Create an array of 3 Promises that resolve after a random time between 1 and 3 seconds
-const promises = [
-  new Promise(resolve => setTimeout(() => resolve(Math.random() * 2 + 1), Math.random() * 2000 + 1000)),
-  new Promise(resolve => setTimeout(() => resolve(Math.random() * 2 + 1), Math.random() * 2000 + 1000)),
-  new Promise(resolve => setTimeout(() => resolve(Math.random() * 2 + 1), Math.random() * 2000 + 1000))
-];
-
-// Add a row that spans 2 columns with the text "Loading..."
-const loadingRow = tbody.querySelector('tr');
-loadingRow.innerHTML = '<td colspan="2">Loading...</td>';
-
-// Wait for all the Promises to resolve using Promise.all()
-Promise.all(promises)
-  .then(results => {
-    // Remove the loading row
-    tbody.removeChild(loadingRow);
-    
-    // Create a row for each Promise and its time taken to resolve
-    results.forEach((time, index) => {
-      const row = document.createElement('tr');
-      row.innerHTML = `<td>Promise ${index + 1}</td><td>${time.toFixed(3)}</td>`;
-      tbody.appendChild(row);
-    });
-    
-    // Create a row for the total time taken to resolve all Promises
-    const totalTime = results.reduce((total, time) => total + time, 0);
-    const totalRow = document.createElement('tr');
-    totalRow.innerHTML = `<td>Total</td><td>${totalTime.toFixed(3)}</td>`;
-    tbody.appendChild(totalRow);
+function createPromise(name) {
+  return new Promise((resolve) => {
+    const delay = randomDelay();
+    setTimeout(() => {
+      console.log(`${name} resolved after ${delay / 1000} seconds`);
+      resolve(delay);
+    }, delay);
   });
+}
+
+Promise.all([
+  createPromise('Promise 1'),
+  createPromise('Promise 2'),
+  createPromise('Promise 3')
+]).then((values) => {
+  const output = document.getElementById('output');
+  output.innerHTML = '';
+
+  values.forEach((value, index) => {
+    const promiseName = `Promise ${index + 1}`;
+    const timeTaken = `${(value / 1000).toFixed(3)}`;
+    const row = `<tr><td>${promiseName}</td><td>${timeTaken}</td></tr>`;
+    output.insertAdjacentHTML('beforeend', row);
+  });
+
+  const totalTimeTaken = `${(values.reduce((total, current) => total + current) / 1000).toFixed(3)}`;
+  const totalRow = `<tr><td>Total</td><td>${totalTimeTaken}</td></tr>`;
+  output.insertAdjacentHTML('beforeend', totalRow);
+}).catch((error) => {
+  console.error('One or more promises failed', error);
+});

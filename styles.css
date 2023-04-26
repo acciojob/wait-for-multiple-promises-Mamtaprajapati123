@@ -1,11 +1,4 @@
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  border: 1px solid black;
-  padding: 5px;
-  text-align: center;
+.container {
+  max-width: 800px;
+  margin: 0 auto;
 }
